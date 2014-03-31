@@ -1,7 +1,7 @@
 ## めだちょんです。
 
 めだかという名前の人工無能です。
-クラウディア( [Croudia](https://croudia.com) )というサイトで活動しています。
+クローディア( [Croudia](https://croudia.com) )というサイトで活動しています。
 
 ![めだちょん画像](https://dl.dropboxusercontent.com/u/1682199/sarosan-web00.png)
 
