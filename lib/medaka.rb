@@ -4,8 +4,8 @@ require 'croudia'
 require 'yaml'
 require 'openssl'
 
-# SSL証明書 一時的措置 TODO: あとで解除する
-OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+# SSL証明書 一時的措置 直ったのでコメントアウト。
+# OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 require 'mechanize'
 
