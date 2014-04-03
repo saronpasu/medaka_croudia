@@ -2,6 +2,11 @@
 require 'sixamo'
 require 'croudia'
 require 'yaml'
+require 'openssl'
+
+# SSL証明書 一時的措置 TODO: あとで解除する
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+
 require 'mechanize'
 
 class Medaka
@@ -15,7 +20,8 @@ class Medaka
      :sixamo,
      :croudia,
      :config,
-     :access_token
+     :access_token,
+     :agent
    )
 
   def load_config
@@ -30,11 +36,11 @@ class Medaka
 
   def get_auth_key
     login_url = LOGIN_URL
-    agent = Mechanize.new
+    @agent ||= Mechanize.new
     user_id = @config[:user_id]
     password = @config[:password]
     
-    login_page = agent.get(login_url)
+    login_page = @agent.get(login_url)
 
     login_form = login_page.forms.find{|form|form.fields.find{|field|field.type.eql?("password")}}
     login_form.username = user_id
@@ -42,7 +48,7 @@ class Medaka
     home = login_form.submit
 
     auth_url = generate_auth_url
-    auth_page = agent.get(auth_url)
+    auth_page = @agent.get(auth_url)
 
     auth_form = auth_page.forms.find{|form|form.fields.find{|field|field.name.eql?("client_id")}}
     auth_button = auth_form.buttons.find{|button|button.name.eql?("accept")}
@@ -61,6 +67,7 @@ class Medaka
       client_id: @config[:client_id],
       client_secret: @config[:client_secret],
     )
+    @agent = Mechanize.new
     @config[:auth_key] = get_auth_key
     @access_token = @croudia.get_access_token(@config[:auth_key])
     @croudia.instance_variable_set(:@access_token, @access_token.to_s)
@@ -103,7 +110,14 @@ class Medaka
     return true
   end
 
-  def get_reply
+  def get_mentions
+    mentions = @croudia.mentions
+    return mentions
+  end
+
+  def get_status(status)
+    status = @croudia.status(status)
+    return status
   end
 
   def get_favorite
