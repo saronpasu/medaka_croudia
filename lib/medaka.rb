@@ -11,18 +11,27 @@ require 'mechanize'
 
 class Medaka
    MY_ACCOUNT_ID = 'medaka'
-   MY_NAME = /(めだ|メダ)(か|カ|ちょん|チョン)(ちゃん|ちょん|くん)/
+   MY_NAME = /(medaka|めだか|saronpasu|サロンパス|サロ|(めだ|メダ)(か|ちょん))/
    CONFIG_FILE = 'config.yaml'
+   IGNORE_IDS_FILE = 'ignore_ids.yaml'
    DICT = 'dict'
    LOGIN_URL = 'https://croudia.com/'
+   BASE_URL = LOGIN_URL
 
    attr_accessor(
      :sixamo,
      :croudia,
      :config,
+     :ignore_ids,
      :access_token,
      :agent
    )
+
+  def load_ignore_ids
+    result = nil
+    open(IGNORE_IDS_FILE, 'r'){|f|result = YAML::load(f.read)}
+    return result
+  end
 
   def load_config
     result = nil
@@ -63,6 +72,7 @@ class Medaka
   def initialize
     @sixamo = Sixamo.new(DICT)
     @config = load_config
+    @ignore_ids = load_ignore_ids
     @croudia = Croudia::Client.new(
       client_id: @config[:client_id],
       client_secret: @config[:client_secret],
@@ -93,8 +103,8 @@ class Medaka
     return timeline
   end
 
-  def update(status)
-    @croudia.update(status)
+  def update(status, params = nil)
+    @croudia.update(status, params)
   end
 
   def random_talk(source = nil)
@@ -118,6 +128,20 @@ class Medaka
   def get_status(status)
     status = @croudia.status(status)
     return status
+  end
+
+  def get_status_replyed_me?(status)
+    status_id = status.id
+    url = BASE_URL+'voices/show/'+status_id.to_s
+    status_page = @agent.get(url)
+    talk_elements = status_page.search("div.show_conversation")
+    user_ids = talk_elements.search("div.contents/a")
+    user_id = user_ids.first.attributes.first.last.value
+    return user_id.match(@config[:user_id]) ? true : false
+  end
+
+  def is_ignore_id?(user_id)
+    @ignore_ids.include?(user_id)
   end
 
   def get_favorite
