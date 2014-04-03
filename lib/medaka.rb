@@ -103,7 +103,7 @@ class Medaka
     return timeline
   end
 
-  def update(status, params = nil)
+  def update(status, params = {})
     @croudia.update(status, params)
   end
 
@@ -136,6 +136,7 @@ class Medaka
     status_page = @agent.get(url)
     talk_elements = status_page.search("div.show_conversation")
     user_ids = talk_elements.search("div.contents/a")
+    return false if user_ids.first.nil?
     user_id = user_ids.first.attributes.first.last.value
     return user_id.match(@config[:user_id]) ? true : false
   end
