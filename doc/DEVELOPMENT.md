@@ -13,7 +13,11 @@
 ### 環境導入
 
 $ gem install mechanize
+
+
 $ gem install croudia
+
+
 $ mkdir dict
 
 ### Croudia Developer Center
@@ -51,6 +55,8 @@ $ vim ignore_ids.yaml
 
 cron などで、
 > $ ruby -C $PWD scripts/random_talk.rb
+
+
 このように実行させることで動作します。
 
 
