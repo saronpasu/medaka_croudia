@@ -32,7 +32,7 @@ $ vim config.yaml
 ```yaml
 ---
 :client_id: "*** your App's Consumer Key ***"
-:cｌient_secret: "*** your App's Consumer Secret ***"
+:client_secret: "*** your App's Consumer Secret ***"
 :user_id: "*** your Bot's User-ID ***"
 :password: "*** your Bot's Password ***"
 
