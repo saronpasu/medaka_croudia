@@ -151,10 +151,40 @@ class Medaka
   def is_favorited?
   end
 
+  def get_follower_ids
+    ids = @croudia.follower_ids.ids
+    return ids
+  end
+
+  def get_following_ids
+    ids = @croudia.friend_ids.ids
+    return ids
+  end
+
   def re_follow
+   follower_ids = get_follower_ids
+   friendships = @croudia.friendships({:user_id => follower_ids.join(',')})
+   friendships.reject!{|friendship|friendship.connections.include?("following")}
+   target_ids = friendships.map{|friendship|friendship.id}
+   unless target_ids.empty? then
+     target_ids.each do |target_id|
+       @croudia.follow({:user_id => target_id})
+     end
+   end
+   return true
   end
 
   def re_unfollow
+   following_ids = get_following_ids
+   friendships = @croudia.friendships({:user_id => following_ids.join(',')})
+   friendships.reject!{|friendship|friendship.connections.include?("followed-by")}
+   target_ids = friendships.map{|friendship|friendship.id}
+   unless target_ids.empty? then
+     target_ids.each do |target_id|
+       @croudia.unfollow({:user_id => target_id})
+     end
+   end
+   return true
   end
 
   def is_replyed?
