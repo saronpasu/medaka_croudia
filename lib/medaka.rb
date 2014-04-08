@@ -168,7 +168,11 @@ class Medaka
    target_ids = friendships.map{|friendship|friendship.id}
    unless target_ids.empty? then
      target_ids.each do |target_id|
-       @croudia.follow({:user_id => target_id})
+       begin
+         @croudia.follow({:user_id => target_id})
+       rescue
+         next # follow disallowed.
+       end
      end
    end
    return true
